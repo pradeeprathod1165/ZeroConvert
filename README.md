@@ -1,16 +1,15 @@
-# React + Vite
+# ZeroConvert
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A 100% private, client-side batch file conversion tool. All processing happens entirely within the browser's memory using WebAssembly and standard web APIs. No files are ever uploaded to an external server.
 
-Currently, two official plugins are available:
+## Capabilities
+* **Zero-Server Architecture:** Complete privacy guaranteed as files never leave the local device.
+* **Image Processing:** Instant conversion between JPG, PNG, and WEBP formats using the native HTML5 Canvas API.
+* **Video Extraction:** Local MP4 to MP3 audio extraction powered by an embedded FFmpeg WebAssembly core.
+* **Batch Operations:** Multi-file queue processing with single-click bulk `.zip` exporting.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+* React + Vite
+* Tailwind CSS v4
+* `@ffmpeg/ffmpeg` (WASM)
+* `jszip`
