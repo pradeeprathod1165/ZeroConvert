@@ -271,28 +271,32 @@ export function PrivacyGuaranteeSection({ isStandalonePage = false }) {
 
 const FAQ_ITEMS = [
   {
-    question: "Are my files really never uploaded to a server?",
-    answer: "Yes, 100%. Unlike traditional online file converters that upload your documents to remote cloud storage, ZeroConvert processes everything inside your own web browser using WebAssembly and HTML5 Canvas. Your files never leave your computer or phone."
+    question: "Are online file converters safe to use?",
+    answer: "Most traditional online converters upload your files to remote cloud servers and store them for up to 24 hours, making them risky for sensitive personal or financial documents. ZeroConvert is completely different: it processes your files 100% locally inside your browser memory. Because your files never touch an external server, it is completely safe for tax forms, bank statements, contracts, and private photos."
+  },
+  {
+    question: "Do I need to install software to convert files privately?",
+    answer: "No. Historically, you had to install heavy desktop software to get offline processing and true privacy. ZeroConvert uses modern WebAssembly (WASM) and HTML5 Canvas technology to give you desktop-grade offline privacy and speed directly inside your web browser—with zero software or plugins to install."
+  },
+  {
+    question: "Are free file converters really free?",
+    answer: "Many 'free' online tools bait you with a free trial and then restrict file sizes (e.g., 50MB–100MB caps) or lock you out after 3 daily conversions unless you buy a subscription. Because ZeroConvert uses your own device's processor instead of expensive cloud servers, it is 100% free with no daily conversion caps, no watermarks, and no subscriptions."
   },
   {
     question: "Can I convert iPhone HEIC photos to JPG or PDF in bulk?",
-    answer: "Absolutely. You can drag and drop dozens of Apple HEIC photos at once and convert them into standard JPG, PNG, or WebP files. If you select 'PDF' as the target format for multiple images, ZeroConvert will automatically merge all of them into a single PDF document."
+    answer: "Yes! You can drag and drop dozens of Apple HEIC photos at once and convert them into standard JPG, PNG, or WebP files. If you select 'PDF' as the target format for multiple images, ZeroConvert will automatically merge all of them into a single PDF document."
   },
   {
     question: "How do I extract MP3 audio from an MP4 video locally?",
-    answer: "Simply drop your MP4, MOV, or WebM video into the converter box, select 'MP3' from the format dropdown, and click Convert All. Our embedded FFmpeg engine extracts the high-bitrate audio track directly in your device's memory in seconds."
-  },
-  {
-    question: "Is there a file size limit or daily conversion cap?",
-    answer: "No! Because you aren't using our server bandwidth or cloud storage, we never charge paywalls, watermark your files, or restrict you to '3 free conversions per day'. The only limit is your own device's available RAM."
+    answer: "Simply drop your MP4, MOV, or WebM video into the converter box, select 'MP3' from the format dropdown, and click Convert All. Our embedded FFmpeg WebAssembly engine extracts the high-bitrate audio track directly in your device's RAM in seconds."
   },
   {
     question: "Can I convert Excel (XLSX) spreadsheets to CSV or JSON safely?",
-    answer: "Yes. Financial spreadsheets and customer lists often contain sensitive data that shouldn't be uploaded to third-party websites. ZeroConvert transforms XLSX, CSV, and JSON files locally on your machine so your confidential data stays strictly private."
+    answer: "Yes. Financial spreadsheets and customer lists contain sensitive data that should never be uploaded to third-party web tools. ZeroConvert transforms XLSX, CSV, and JSON files locally on your machine so your confidential rows and columns stay strictly private."
   },
   {
     question: "Does ZeroConvert work offline without an internet connection?",
-    answer: "Yes! Once the webpage and conversion engine are loaded in your browser tab, you can disconnect from Wi-Fi or turn on Airplane Mode and continue converting images, PDFs, spreadsheets, and videos completely offline."
+    answer: "Yes! Once the webpage is open in your browser tab, you can turn off your Wi-Fi or switch to Airplane Mode and continue converting images, PDFs, spreadsheets, and videos completely offline."
   }
 ];
 
