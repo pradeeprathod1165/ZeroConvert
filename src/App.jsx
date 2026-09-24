@@ -1,13 +1,16 @@
 import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import DropZone from './components/DropZone';
 import FileQueue from './components/FileQueue';
-import { Loader2, Download, Zap, Lock } from 'lucide-react';
+import { HowItWorksSection, PrivacyGuaranteeSection, FaqSection } from './components/SeoSections';
+import { Loader2, Download, Zap, Lock, ArrowLeft } from 'lucide-react';
 import { processImage } from './utils/imageEngine';
 import { imagesToPdf, pdfToImages } from './utils/pdfEngine';
 import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
-import { generateZip } from './utils/zipExport';
 import { processDataFile } from './utils/dataEngine';
+import { generateZip } from './utils/zipExport';
+
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -15,6 +18,7 @@ function App() {
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
   const [engineState, setEngineState] = useState({ isInitializing: false, message: '' });
+  const [activeModal, setActiveModal] = useState(null);
 
   const handleFilesAdded = (newFiles) => {
     setFiles((prev) => [...prev, ...newFiles]);
@@ -157,102 +161,155 @@ function App() {
   const completedFilesCount = files.filter(f => f.status === 'Completed').length;
   const canDownloadZip = completedFilesCount > 1;
 
-  return (
-    <div className="min-h-screen w-full flex flex-col relative bg-zinc-950 text-zinc-50 font-sans">
+  const ConverterWorkspace = (
+    <div className="w-full max-w-5xl mx-auto flex flex-col items-center px-6 py-16 md:py-24">
+      <div className="w-full max-w-3xl text-center mb-14">
+        <h1 className="text-4xl md:text-5xl font-semibold text-zinc-100 tracking-tight mb-5">
+          Private Batch Converter
+        </h1>
+        <p className="text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed">
+          A 100% client-side conversion tool. Your files never leave your device, ensuring complete privacy and maximum speed.
+        </p>
+      </div>
+
+      <DropZone onFilesAdded={handleFilesAdded} />
       
-      <Navbar />
-
-      {engineState.isInitializing && (
-        <div className="fixed inset-0 z-50 bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center">
-          <Loader2 size={48} className="text-indigo-500 animate-spin mb-4" />
-          <p className="text-lg font-medium text-zinc-200">{engineState.message}</p>
-          <p className="text-sm text-zinc-500 mt-2">This only happens once per session.</p>
-        </div>
-      )}
-
-      {isZipping && (
-        <div className="fixed inset-0 z-50 bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center">
-          <Loader2 size={48} className="text-emerald-500 animate-spin mb-4" />
-          <p className="text-lg font-medium text-zinc-200">Compressing files...</p>
-          <div className="w-64 h-2 bg-zinc-800 rounded-full mt-4 overflow-hidden">
-            <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${zipProgress}%` }} />
+      {files.length > 0 && (
+        <div className="w-full max-w-3xl mx-auto mt-16 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+          <h2 className="text-lg font-medium text-zinc-200">
+            Active Queue
+          </h2>
+          
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {canDownloadZip && (
+              <button
+                onClick={handleDownloadZip}
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 text-sm font-medium rounded-lg transition-colors border border-emerald-500/20 cursor-pointer"
+              >
+                <Download size={16} />
+                Download ZIP
+              </button>
+            )}
+            
+            <button
+              onClick={handleStartConversion}
+              disabled={!canConvert}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {isProcessingGlobal ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
+              {isProcessingGlobal ? 'Processing...' : 'Convert All'}
+            </button>
           </div>
         </div>
       )}
 
-      <main className="flex-1 w-full max-w-5xl mx-auto flex flex-col items-center px-6 py-16 md:py-24 pb-24">
-        
-        <div className="w-full max-w-3xl text-center mb-14">
-          <h1 className="text-4xl md:text-5xl font-semibold text-zinc-100 tracking-tight mb-5">
-            Private Batch Converter
-          </h1>
-          <p className="text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed">
-            A 100% client-side conversion tool. Your files never leave your device, ensuring complete privacy and maximum speed.
-          </p>
-        </div>
+      <FileQueue 
+        files={files} 
+        onUpdateFormat={handleUpdateFormat}
+        onRemoveFile={handleRemoveFile}
+      />
+    </div>
+  );
 
-        <DropZone onFilesAdded={handleFilesAdded} />
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen w-full flex flex-col relative bg-zinc-950 text-zinc-50 font-sans">
         
-        {files.length > 0 && (
-          <div className="w-full max-w-3xl mx-auto mt-16 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-zinc-800 pb-4">
-            <h2 className="text-lg font-medium text-zinc-200">
-              Active Queue
-            </h2>
-            
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              {canDownloadZip && (
-                <button
-                  onClick={handleDownloadZip}
-                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 text-sm font-medium rounded-lg transition-colors border border-emerald-500/20"
-                >
-                  <Download size={16} />
-                  Download ZIP
-                </button>
-              )}
-              
-              <button
-                onClick={handleStartConversion}
-                disabled={!canConvert}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isProcessingGlobal ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
-                {isProcessingGlobal ? 'Processing...' : 'Convert All'}
-              </button>
+        <Navbar />
+
+        {engineState.isInitializing && (
+          <div className="fixed inset-0 z-50 bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center">
+            <Loader2 size={48} className="text-indigo-500 animate-spin mb-4" />
+            <p className="text-lg font-medium text-zinc-200">{engineState.message}</p>
+            <p className="text-sm text-zinc-500 mt-2">This only happens once per session.</p>
+          </div>
+        )}
+
+        {isZipping && (
+          <div className="fixed inset-0 z-50 bg-zinc-950/80 backdrop-blur-sm flex flex-col items-center justify-center">
+            <Loader2 size={48} className="text-emerald-500 animate-spin mb-4" />
+            <p className="text-lg font-medium text-zinc-200">Compressing files...</p>
+            <div className="w-64 h-2 bg-zinc-800 rounded-full mt-4 overflow-hidden">
+              <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${zipProgress}%` }} />
             </div>
           </div>
         )}
 
-        <FileQueue 
-          files={files} 
-          onUpdateFormat={handleUpdateFormat}
-          onRemoveFile={handleRemoveFile}
-        />
-      </main>
+        <main className="flex-1 w-full">
+         <Routes>
+            {/* Main Landing Page: Converter + All 3 Scrollable SEO Sections */}
+            <Route path="/" element={
+              <>
+                {ConverterWorkspace}
+                <HowItWorksSection />
+                <PrivacyGuaranteeSection />
+                <FaqSection />
+              </>
+            } />
 
-      <footer className="w-full border-t border-zinc-900 bg-zinc-950 py-8 px-6 mt-auto">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-          <div className="flex flex-col items-center md:items-start text-zinc-500 text-sm gap-1">
-            <div className="flex items-center gap-1.5 text-zinc-400 font-medium">
-              <Lock size={14} />
-              100% Private & Secure
-            </div>
-            <p>No files ever leave this device.</p>
-          </div>
-          
-          <div className="flex justify-center">
-            <div className="px-4 py-2 bg-zinc-900/80 border border-zinc-800 rounded-lg text-xs text-zinc-500 tracking-wide text-center w-full max-w-xs">
-              Ad Space • <a href="#" className="text-indigo-400 hover:underline transition-colors">Support this free tool</a>
-            </div>
-          </div>
+            {/* Dedicated Multi-Page SEO Route: /how-it-works */}
+            <Route path="/how-it-works" element={
+              <div className="pt-8">
+                <div className="max-w-5xl mx-auto px-6">
+                  <Link to="/" className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 font-medium">
+                    <ArrowLeft size={16} /> Back to File Converter
+                  </Link>
+                </div>
+                <HowItWorksSection isStandalonePage={true} />
+              </div>
+            } />
 
-          <div className="flex justify-center md:justify-end gap-6 text-sm text-zinc-500">
-            <a href="#" className="hover:text-zinc-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-zinc-300 transition-colors">Terms of Service</a>
+            {/* Dedicated Multi-Page SEO Route: /privacy */}
+            <Route path="/privacy" element={
+              <div className="pt-8">
+                <div className="max-w-5xl mx-auto px-6">
+                  <Link to="/" className="inline-flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300 font-medium">
+                    <ArrowLeft size={16} /> Back to File Converter
+                  </Link>
+                </div>
+                <PrivacyGuaranteeSection isStandalonePage={true} />
+              </div>
+            } />
+
+            {/* Dedicated Multi-Page SEO Route: /faq */}
+            <Route path="/faq" element={
+              <div className="pt-8">
+                <div className="max-w-4xl mx-auto px-6">
+                  <Link to="/" className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 font-medium">
+                    <ArrowLeft size={16} /> Back to File Converter
+                  </Link>
+                </div>
+                <FaqSection isStandalonePage={true} />
+              </div>
+            } />
+          </Routes>
+        </main>
+
+        <footer className="w-full border-t border-zinc-900 bg-zinc-950 py-8 px-6 mt-auto">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <Link to="/privacy" className="flex flex-col items-center md:items-start text-zinc-500 text-sm gap-1 hover:text-zinc-300 transition-colors">
+              <div className="flex items-center gap-1.5 text-zinc-400 font-medium">
+                <Lock size={14} className="text-emerald-400" />
+                100% Private & Secure
+              </div>
+              <p>No files ever leave this device.</p>
+            </Link>
+            
+            <div className="flex justify-center">
+              <div className="px-4 py-2 bg-zinc-900/80 border border-zinc-800 rounded-lg text-xs text-zinc-500 tracking-wide text-center w-full max-w-xs">
+                Ad Space • <a href="#" className="text-indigo-400 hover:underline transition-colors">Support this free tool</a>
+              </div>
+            </div>
+
+            <div className="flex justify-center md:justify-end gap-6 text-sm text-zinc-500">
+              <Link to="/how-it-works" className="hover:text-zinc-300 transition-colors">How it Works</Link>
+              <Link to="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Policy</Link>
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </BrowserRouter>
   );
 }
 
-export default App;
+export default App
