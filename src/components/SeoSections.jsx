@@ -213,37 +213,42 @@ export function PrivacyGuaranteeSection({ isStandalonePage = false }) {
       </div>
 
       {/* Comparison Table: Cloud vs ZeroConvert */}
+     {/* Comparison Table: Cloud vs ZeroConvert (Responsive Horizontal Scroll on Small Phones) */}
       <div className="border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-900/30 mb-10">
-        <div className="grid grid-cols-3 bg-zinc-900/90 border-b border-zinc-800 px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-          <div>What Matters</div>
-          <div className="text-rose-400 flex items-center gap-1.5">
-            <XCircle size={15} /> Other Online Converters
-          </div>
-          <div className="text-emerald-400 flex items-center gap-1.5">
-            <CheckCircle2 size={15} /> ZeroConvert
-          </div>
-        </div>
+        <div className="overflow-x-auto">
+          <div className="min-w-[540px]">
+            <div className="grid grid-cols-3 bg-zinc-900/90 border-b border-zinc-800 px-4 sm:px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <div>What Matters</div>
+              <div className="text-rose-400 flex items-center gap-1.5">
+                <XCircle size={15} className="shrink-0" /> Other Converters
+              </div>
+              <div className="text-emerald-400 flex items-center gap-1.5">
+                <CheckCircle2 size={15} className="shrink-0" /> ZeroConvert
+              </div>
+            </div>
 
-        <div className="divide-y divide-zinc-800/70 text-xs md:text-sm">
-          <div className="grid grid-cols-3 px-6 py-4 items-center">
-            <span className="font-medium text-zinc-200">Where files are converted</span>
-            <span className="text-zinc-500">Uploaded to a remote company's cloud server</span>
-            <span className="text-emerald-400 font-medium">Directly inside your own web browser</span>
-          </div>
-          <div className="grid grid-cols-3 px-6 py-4 items-center">
-            <span className="font-medium text-zinc-200">Waiting for uploads</span>
-            <span className="text-zinc-500">Slow—depends on your internet upload speed</span>
-            <span className="text-emerald-400 font-medium">Zero upload wait—starts immediately</span>
-          </div>
-          <div className="grid grid-cols-3 px-6 py-4 items-center">
-            <span className="font-medium text-zinc-200">Daily file limits & paywalls</span>
-            <span className="text-zinc-500">Strict MB limits & "Max 3 files per day"</span>
-            <span className="text-emerald-400 font-medium">Unlimited files & batch ZIP downloads</span>
-          </div>
-          <div className="grid grid-cols-3 px-6 py-4 items-center">
-            <span className="font-medium text-zinc-200">Risk of data leaks</span>
-            <span className="text-zinc-500">Files sit on cloud storage for up to 24 hours</span>
-            <span className="text-emerald-400 font-medium">Zero—cleared the moment you close the tab</span>
+            <div className="divide-y divide-zinc-800/70 text-xs sm:text-sm">
+              <div className="grid grid-cols-3 px-4 sm:px-6 py-4 items-center gap-2">
+                <span className="font-medium text-zinc-200">Where files are converted</span>
+                <span className="text-zinc-500">Uploaded to a remote cloud server</span>
+                <span className="text-emerald-400 font-medium">Directly inside your web browser</span>
+              </div>
+              <div className="grid grid-cols-3 px-4 sm:px-6 py-4 items-center gap-2">
+                <span className="font-medium text-zinc-200">Waiting for uploads</span>
+                <span className="text-zinc-500">Slow—depends on internet speed</span>
+                <span className="text-emerald-400 font-medium">Zero upload wait—starts immediately</span>
+              </div>
+              <div className="grid grid-cols-3 px-4 sm:px-6 py-4 items-center gap-2">
+                <span className="font-medium text-zinc-200">Daily limits & paywalls</span>
+                <span className="text-zinc-500">Strict MB limits & daily caps</span>
+                <span className="text-emerald-400 font-medium">Unlimited files & batch ZIP exports</span>
+              </div>
+              <div className="grid grid-cols-3 px-4 sm:px-6 py-4 items-center gap-2">
+                <span className="font-medium text-zinc-200">Risk of data leaks</span>
+                <span className="text-zinc-500">Stored on cloud disks for 24h+</span>
+                <span className="text-emerald-400 font-medium">Zero—cleared when you close the tab</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
