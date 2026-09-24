@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import DropZone from './components/DropZone';
-import FileQueue from './components/FileQueue';
+import FileQueue, { FormatDropdown, getAvailableFormats } from './components/FileQueue';
 import { HowItWorksSection, PrivacyGuaranteeSection, FaqSection } from './components/SeoSections';
-import { Loader2, Download, Zap, Lock, ArrowLeft } from 'lucide-react';
+import { Loader2, Download, Zap, Lock, ArrowLeft, Trash2 } from 'lucide-react';
 import { processImage } from './utils/imageEngine';
 import { imagesToPdf, pdfToImages } from './utils/pdfEngine';
 import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
@@ -14,6 +14,7 @@ import { generateZip } from './utils/zipExport';
 
 function App() {
   const [files, setFiles] = useState([]);
+  const [globalFormat, setGlobalFormat] = useState('');
   const [isProcessingGlobal, setIsProcessingGlobal] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
@@ -28,6 +29,30 @@ function App() {
     setFiles((prev) => 
       prev.map((f) => f.id === fileId ? { ...f, targetFormat: newFormat, error: null } : f)
     );
+  };
+
+  // 1. Updates all compatible 'Ready' files when you pick a format in the Master Selector
+  const handleUpdateAllFormats = (newFormat) => {
+    setGlobalFormat(newFormat);
+    setFiles((prev) =>
+      prev.map((f) => {
+        if (f.status !== 'Ready') return f;
+        const supported = getAvailableFormats(f.type, f.name);
+        if (supported.includes(newFormat)) {
+          return { ...f, targetFormat: newFormat, error: null };
+        }
+        return f;
+      })
+    );
+  };
+
+  // 2. Wipes the active queue and frees browser RAM
+  const handleClearQueue = () => {
+    files.forEach((f) => {
+      if (f.outputUrl) URL.revokeObjectURL(f.outputUrl);
+    });
+    setFiles([]);
+    setGlobalFormat('');
   };
 
   const handleRemoveFile = (fileId) => {
@@ -161,6 +186,14 @@ function App() {
   const completedFilesCount = files.filter(f => f.status === 'Completed').length;
   const canDownloadZip = completedFilesCount > 1;
 
+  const masterFormatOptions = Array.from(
+    new Set(
+      files
+        .filter((f) => f.status === 'Ready')
+        .flatMap((f) => getAvailableFormats(f.type, f.name))
+    )
+  );
+
   const ConverterWorkspace = (
     <div className="w-full max-w-5xl mx-auto flex flex-col items-center px-6 py-16 md:py-24">
       <div className="w-full max-w-3xl text-center mb-14">
@@ -174,27 +207,61 @@ function App() {
 
       <DropZone onFilesAdded={handleFilesAdded} />
       
-      {files.length > 0 && (
-        <div className="w-full max-w-3xl mx-auto mt-16 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-zinc-800 pb-4">
-          <h2 className="text-lg font-medium text-zinc-200">
-            Active Queue
-          </h2>
+     {files.length > 0 && (
+        <div className="w-full max-w-3xl mx-auto mt-12 sm:mt-16 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
           
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          {/* Left Side: Active Queue Counter + Master Format Dropdown */}
+          <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4">
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-base sm:text-lg font-medium text-zinc-200">
+                Active Queue
+              </h2>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
+                {files.length}
+              </span>
+            </div>
+
+            {masterFormatOptions.length > 0 && (
+              <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl">
+                <span className="text-xs font-medium text-zinc-400 whitespace-nowrap">
+                  Convert all to:
+                </span>
+                <FormatDropdown
+                  value={globalFormat}
+                  options={masterFormatOptions}
+                  disabled={isProcessingGlobal}
+                  onChange={handleUpdateAllFormats}
+                  placeholder="Select..."
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Right Side: Clear Queue, Download ZIP, and Convert All Buttons */}
+          <div className="flex items-center gap-2.5 w-full lg:w-auto">
+            <button
+              onClick={handleClearQueue}
+              disabled={isProcessingGlobal}
+              className="p-2 text-zinc-400 hover:text-rose-400 bg-zinc-900 hover:bg-rose-500/10 border border-zinc-800 hover:border-rose-500/20 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+              title="Clear Queue"
+            >
+              <Trash2 size={16} />
+            </button>
+
             {canDownloadZip && (
               <button
                 onClick={handleDownloadZip}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 text-sm font-medium rounded-lg transition-colors border border-emerald-500/20 cursor-pointer"
+                className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 text-sm font-medium rounded-lg transition-colors border border-emerald-500/20 cursor-pointer"
               >
                 <Download size={16} />
                 Download ZIP
               </button>
             )}
-            
+
             <button
               onClick={handleStartConversion}
               disabled={!canConvert}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isProcessingGlobal ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
               {isProcessingGlobal ? 'Processing...' : 'Convert All'}

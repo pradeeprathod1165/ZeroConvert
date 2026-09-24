@@ -26,7 +26,7 @@ const StatusBadge = ({ status }) => {
 };
 
 // Custom React Dropdown that stays strictly anchored inside mobile viewports
-const FormatDropdown = ({ value, options, disabled, onChange }) => {
+export const FormatDropdown = ({ value, options, disabled, onChange, placeholder = 'Format' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -49,7 +49,7 @@ const FormatDropdown = ({ value, options, disabled, onChange }) => {
         className="flex items-center justify-between gap-2 bg-zinc-950 border border-zinc-700 hover:border-zinc-600 text-xs sm:text-sm text-zinc-200 rounded-lg px-3 py-1.5 min-w-[105px] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50 cursor-pointer transition-colors"
       >
         <span className={value ? 'text-zinc-100 font-medium' : 'text-zinc-400'}>
-          {value || 'Format'}
+          {value || placeholder}
         </span>
         <ChevronDown size={14} className={`text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -84,7 +84,7 @@ const FormatDropdown = ({ value, options, disabled, onChange }) => {
 };
 
 // Smart utility to filter formats based on input type
-const getAvailableFormats = (fileType, fileName) => {
+export const getAvailableFormats = (fileType, fileName) => {
   const type = (fileType || '').toLowerCase();
   const ext = fileName.split('.').pop().toLowerCase();
   
