@@ -3,9 +3,11 @@ import Navbar from './components/Navbar';
 import DropZone from './components/DropZone';
 import FileQueue from './components/FileQueue';
 import { Loader2, Download, Zap, Lock } from 'lucide-react';
-import { processImage } from './utils/imageConverter';
-import { initFFmpeg, processVideoToAudio } from './utils/ffmpegEngine';
+import { processImage } from './utils/imageEngine';
+import { imagesToPdf, pdfToImages } from './utils/pdfEngine';
+import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
 import { generateZip } from './utils/zipExport';
+import { processDataFile } from './utils/dataEngine';
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -40,10 +42,10 @@ function App() {
     setIsProcessingGlobal(true);
     const filesToProcess = files.filter(f => f.status === 'Ready' && f.targetFormat);
 
-    const needsVideoEngine = filesToProcess.some(f => f.targetFormat === 'MP3' || f.targetFormat === 'MP4');
-    
+    // 1. Pre-flight check for FFmpeg dependencies
+    const needsVideoEngine = filesToProcess.some(f => ['MP3', 'MP4', 'GIF'].includes(f.targetFormat));
     if (needsVideoEngine) {
-      setEngineState({ isInitializing: true, message: 'Initializing Video Engine (Downloading WebAssembly Core)...' });
+      setEngineState({ isInitializing: true, message: 'Initializing Media Engine (Downloading WASM Core)...' });
       try {
         await initFFmpeg();
       } catch (error) {
@@ -55,21 +57,59 @@ function App() {
       setEngineState({ isInitializing: false, message: '' });
     }
 
-    for (const fileObj of filesToProcess) {
+    // 2. Separate files into batch-PDF groups vs standard processing
+    const imageToPdfFiles = filesToProcess.filter(f => f.file.type.startsWith('image/') && f.targetFormat === 'PDF');
+    const standardFiles = filesToProcess.filter(f => !imageToPdfFiles.includes(f));
+
+    // 3. Process Batch Images to PDF
+    if (imageToPdfFiles.length > 0) {
+      // Set all to processing
+      imageToPdfFiles.forEach(f => updateFileState(f.id, { status: 'Processing', progress: 0, error: null }));
+      
+      try {
+        const rawFiles = imageToPdfFiles.map(f => f.file);
+        const result = await imagesToPdf(rawFiles, (progressValue) => {
+          // Sync progress across all files in the batch
+          imageToPdfFiles.forEach(f => updateFileState(f.id, { progress: progressValue }));
+        });
+
+        // Apply the same output URL to all items so clicking download on any gives the bundled PDF
+        imageToPdfFiles.forEach(f => {
+          updateFileState(f.id, { 
+            status: 'Completed', 
+            progress: 100, 
+            outputUrl: result.url,
+            outputExtension: result.extension,
+            name: `Merged_Images.${result.extension}` // Visually indicate it merged
+          });
+        });
+      } catch (error) {
+        imageToPdfFiles.forEach(f => {
+          updateFileState(f.id, { status: 'Error', error: error.message || 'PDF Merge failed.' });
+        });
+      }
+    }
+
+    // 4. Process Standard Files (1-to-1)
+    for (const fileObj of standardFiles) {
       updateFileState(fileObj.id, { status: 'Processing', progress: 0, error: null });
 
       try {
         let result;
         const progressCallback = (progressValue) => updateFileState(fileObj.id, { progress: progressValue });
 
-        if (['JPG', 'PNG', 'WEBP'].includes(fileObj.targetFormat)) {
+       if (fileObj.file.type === 'application/pdf') {
+          result = await pdfToImages(fileObj.file, progressCallback);
+        } else if (['MP3', 'MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(fileObj.targetFormat)) {
+          result = await processAudioVideo(fileObj.file, fileObj.targetFormat, progressCallback);
+        } else if (['JPG', 'PNG', 'WEBP', 'AVIF'].includes(fileObj.targetFormat)) {
           result = await processImage(fileObj.file, fileObj.targetFormat, progressCallback);
-        } else if (fileObj.targetFormat === 'MP3') {
-          result = await processVideoToAudio(fileObj.file, progressCallback);
+        } else if (['CSV', 'JSON', 'XLSX'].includes(fileObj.targetFormat)) {
+          // Route to our new Data Engine
+          result = await processDataFile(fileObj.file, fileObj.targetFormat, progressCallback);
         } else {
-          throw new Error(`Format ${fileObj.targetFormat} is not fully supported yet.`);
+          throw new Error(`Format combination not supported.`);
         }
-
         updateFileState(fileObj.id, { 
           status: 'Completed', 
           progress: 100, 
