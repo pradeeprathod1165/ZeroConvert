@@ -67,7 +67,7 @@ export default function Navbar() {
             Privacy Guarantee
           </Link>
           
-          <div className="h-4 w-px bg-zinc-800"></div>
+          {/* <div className="h-4 w-px bg-zinc-800"></div> */}
           
           {/* <a 
             href="https://github.com" 
