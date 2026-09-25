@@ -55,7 +55,7 @@ export function AboutPage() {
 
 export function ContactPage() {
   const [copied, setCopied] = useState(false);
-  const supportEmail = "support@zeroconvert.app"; // Replace with your actual domain/email
+  const supportEmail = "support@getzeroconvert.com"; // Replace with your actual domain/email
 
   useEffect(() => {
     document.title = 'Contact Us — ZeroConvert Support & Feedback';

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import DropZone from './components/DropZone';
 import FileQueue, { FormatDropdown, getAvailableFormats } from './components/FileQueue';
@@ -17,6 +17,17 @@ import { imagesToPdf, pdfToImages } from './utils/pdfEngine';
 import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
 import { processDataFile } from './utils/dataEngine';
 import { generateZip } from './utils/zipExport';
+
+// Updates the browser tab title ONLY for the currently active URL route
+function SeoTitleUpdater() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (SEO_LANDING_PAGES[pathname]) {
+      document.title = SEO_LANDING_PAGES[pathname].title;
+    }
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -200,7 +211,6 @@ function App() {
   // Dynamically renders the Converter + SEO Sections with keyword-targeted H1 and Title
   const renderConverterPage = (pathKey = '/') => {
     const seoData = SEO_LANDING_PAGES[pathKey] || SEO_LANDING_PAGES['/'];
-    document.title = seoData.title;
 
     return (
       <>
@@ -296,6 +306,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    <SeoTitleUpdater />
       <div className="min-h-screen w-full flex flex-col relative bg-zinc-950 text-zinc-50 font-sans">
         
         <Navbar />
