@@ -69,7 +69,7 @@ export default function Navbar() {
           
           <div className="h-4 w-px bg-zinc-800"></div>
           
-          <a 
+          {/* <a 
             href="https://github.com" 
             target="_blank" 
             rel="noreferrer"
@@ -78,7 +78,7 @@ export default function Navbar() {
           >
             <Code size={18} />
             <span>Source</span>
-          </a>
+          </a> */}
         </div>
 
         {/* Mobile Menu Button */}

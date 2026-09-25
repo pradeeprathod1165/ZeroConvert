@@ -3,14 +3,20 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import DropZone from './components/DropZone';
 import FileQueue, { FormatDropdown, getAvailableFormats } from './components/FileQueue';
-import { HowItWorksSection, PrivacyGuaranteeSection, FaqSection } from './components/SeoSections';
+import { 
+  HowItWorksSection, 
+  PrivacyGuaranteeSection, 
+  FaqSection, 
+  PopularConvertersSection, 
+  SEO_LANDING_PAGES 
+} from './components/SeoSections';
+import { AboutPage, ContactPage, TermsPage, AdSensePrivacyDisclosure } from './components/LegalPages';
 import { Loader2, Download, Zap, Lock, ArrowLeft, Trash2 } from 'lucide-react';
 import { processImage } from './utils/imageEngine';
 import { imagesToPdf, pdfToImages } from './utils/pdfEngine';
 import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
 import { processDataFile } from './utils/dataEngine';
 import { generateZip } from './utils/zipExport';
-
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -19,7 +25,6 @@ function App() {
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
   const [engineState, setEngineState] = useState({ isInitializing: false, message: '' });
-  const [activeModal, setActiveModal] = useState(null);
 
   const handleFilesAdded = (newFiles) => {
     setFiles((prev) => [...prev, ...newFiles]);
@@ -72,7 +77,9 @@ function App() {
     const filesToProcess = files.filter(f => f.status === 'Ready' && f.targetFormat);
 
     // 1. Pre-flight check for FFmpeg dependencies
-    const needsVideoEngine = filesToProcess.some(f => ['MP3', 'MP4', 'GIF'].includes(f.targetFormat));
+    const needsVideoEngine = filesToProcess.some(f => 
+      ['MP3', 'MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(f.targetFormat)
+    );
     if (needsVideoEngine) {
       setEngineState({ isInitializing: true, message: 'Initializing Media Engine (Downloading WASM Core)...' });
       try {
@@ -92,24 +99,21 @@ function App() {
 
     // 3. Process Batch Images to PDF
     if (imageToPdfFiles.length > 0) {
-      // Set all to processing
       imageToPdfFiles.forEach(f => updateFileState(f.id, { status: 'Processing', progress: 0, error: null }));
       
       try {
         const rawFiles = imageToPdfFiles.map(f => f.file);
         const result = await imagesToPdf(rawFiles, (progressValue) => {
-          // Sync progress across all files in the batch
           imageToPdfFiles.forEach(f => updateFileState(f.id, { progress: progressValue }));
         });
 
-        // Apply the same output URL to all items so clicking download on any gives the bundled PDF
         imageToPdfFiles.forEach(f => {
           updateFileState(f.id, { 
             status: 'Completed', 
             progress: 100, 
             outputUrl: result.url,
             outputExtension: result.extension,
-            name: `Merged_Images.${result.extension}` // Visually indicate it merged
+            name: `Merged_Images.${result.extension}`
           });
         });
       } catch (error) {
@@ -127,14 +131,13 @@ function App() {
         let result;
         const progressCallback = (progressValue) => updateFileState(fileObj.id, { progress: progressValue });
 
-       if (fileObj.file.type === 'application/pdf') {
+        if (fileObj.file.type === 'application/pdf') {
           result = await pdfToImages(fileObj.file, progressCallback);
         } else if (['MP3', 'MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(fileObj.targetFormat)) {
           result = await processAudioVideo(fileObj.file, fileObj.targetFormat, progressCallback);
         } else if (['JPG', 'PNG', 'WEBP', 'AVIF'].includes(fileObj.targetFormat)) {
           result = await processImage(fileObj.file, fileObj.targetFormat, progressCallback);
         } else if (['CSV', 'JSON', 'XLSX'].includes(fileObj.targetFormat)) {
-          // Route to our new Data Engine
           result = await processDataFile(fileObj.file, fileObj.targetFormat, progressCallback);
         } else {
           throw new Error(`Format combination not supported.`);
@@ -194,89 +197,102 @@ function App() {
     )
   );
 
-  const ConverterWorkspace = (
-    <div className="w-full max-w-5xl mx-auto flex flex-col items-center px-6 py-16 md:py-24">
-      <div className="w-full max-w-3xl text-center mb-14">
-        <h1 className="text-4xl md:text-5xl font-semibold text-zinc-100 tracking-tight mb-5">
-          Private Batch Converter
-        </h1>
-        <p className="text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed">
-          A 100% client-side conversion tool. Your files never leave your device, ensuring complete privacy and maximum speed.
-        </p>
-      </div>
+  // Dynamically renders the Converter + SEO Sections with keyword-targeted H1 and Title
+  const renderConverterPage = (pathKey = '/') => {
+    const seoData = SEO_LANDING_PAGES[pathKey] || SEO_LANDING_PAGES['/'];
+    document.title = seoData.title;
 
-      <DropZone onFilesAdded={handleFilesAdded} />
-      
-     {files.length > 0 && (
-        <div className="w-full max-w-3xl mx-auto mt-12 sm:mt-16 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+    return (
+      <>
+        <div className="w-full max-w-5xl mx-auto flex flex-col items-center px-6 py-16 md:py-24">
+          <div className="w-full max-w-3xl text-center mb-14">
+            <h1 className="text-4xl md:text-5xl font-semibold text-zinc-100 tracking-tight mb-5">
+              {seoData.h1}
+            </h1>
+            <p className="text-base md:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+              {seoData.subtitle}
+            </p>
+          </div>
+
+          <DropZone onFilesAdded={handleFilesAdded} />
           
-          {/* Left Side: Active Queue Counter + Master Format Dropdown */}
-          <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4">
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-base sm:text-lg font-medium text-zinc-200">
-                Active Queue
-              </h2>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
-                {files.length}
-              </span>
-            </div>
+          {files.length > 0 && (
+            <div className="w-full max-w-3xl mx-auto mt-12 sm:mt-16 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+              
+              {/* Left Side: Active Queue Counter + Master Format Dropdown */}
+              <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4">
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-base sm:text-lg font-medium text-zinc-200">
+                    Active Queue
+                  </h2>
+                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
+                    {files.length}
+                  </span>
+                </div>
 
-            {masterFormatOptions.length > 0 && (
-              <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl">
-                <span className="text-xs font-medium text-zinc-400 whitespace-nowrap">
-                  Convert all to:
-                </span>
-                <FormatDropdown
-                  value={globalFormat}
-                  options={masterFormatOptions}
-                  disabled={isProcessingGlobal}
-                  onChange={handleUpdateAllFormats}
-                  placeholder="Select..."
-                />
+                {masterFormatOptions.length > 0 && (
+                  <div className="flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3 py-1.5 rounded-xl">
+                    <span className="text-xs font-medium text-zinc-400 whitespace-nowrap">
+                      Convert all to:
+                    </span>
+                    <FormatDropdown
+                      value={globalFormat}
+                      options={masterFormatOptions}
+                      disabled={isProcessingGlobal}
+                      onChange={handleUpdateAllFormats}
+                      placeholder="Select..."
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Right Side: Clear Queue, Download ZIP, and Convert All Buttons */}
-          <div className="flex items-center gap-2.5 w-full lg:w-auto">
-            <button
-              onClick={handleClearQueue}
-              disabled={isProcessingGlobal}
-              className="p-2 text-zinc-400 hover:text-rose-400 bg-zinc-900 hover:bg-rose-500/10 border border-zinc-800 hover:border-rose-500/20 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-              title="Clear Queue"
-            >
-              <Trash2 size={16} />
-            </button>
+              {/* Right Side: Clear Queue, Download ZIP, and Convert All Buttons */}
+              <div className="flex items-center gap-2.5 w-full lg:w-auto">
+                <button
+                  onClick={handleClearQueue}
+                  disabled={isProcessingGlobal}
+                  className="p-2 text-zinc-400 hover:text-rose-400 bg-zinc-900 hover:bg-rose-500/10 border border-zinc-800 hover:border-rose-500/20 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                  title="Clear Queue"
+                >
+                  <Trash2 size={16} />
+                </button>
 
-            {canDownloadZip && (
-              <button
-                onClick={handleDownloadZip}
-                className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 text-sm font-medium rounded-lg transition-colors border border-emerald-500/20 cursor-pointer"
-              >
-                <Download size={16} />
-                Download ZIP
-              </button>
-            )}
+                {canDownloadZip && (
+                  <button
+                    onClick={handleDownloadZip}
+                    className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 text-sm font-medium rounded-lg transition-colors border border-emerald-500/20 cursor-pointer"
+                  >
+                    <Download size={16} />
+                    Download ZIP
+                  </button>
+                )}
 
-            <button
-              onClick={handleStartConversion}
-              disabled={!canConvert}
-              className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {isProcessingGlobal ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
-              {isProcessingGlobal ? 'Processing...' : 'Convert All'}
-            </button>
-          </div>
+                <button
+                  onClick={handleStartConversion}
+                  disabled={!canConvert}
+                  className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {isProcessingGlobal ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
+                  {isProcessingGlobal ? 'Processing...' : 'Convert All'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <FileQueue 
+            files={files} 
+            onUpdateFormat={handleUpdateFormat}
+            onRemoveFile={handleRemoveFile}
+          />
         </div>
-      )}
 
-      <FileQueue 
-        files={files} 
-        onUpdateFormat={handleUpdateFormat}
-        onRemoveFile={handleRemoveFile}
-      />
-    </div>
-  );
+        <HowItWorksSection />
+        <PrivacyGuaranteeSection />
+        <FaqSection />
+        <PopularConvertersSection />
+      </>
+    );
+  };
 
   return (
     <BrowserRouter>
@@ -303,16 +319,15 @@ function App() {
         )}
 
         <main className="flex-1 w-full">
-         <Routes>
-            {/* Main Landing Page: Converter + All 3 Scrollable SEO Sections */}
-            <Route path="/" element={
-              <>
-                {ConverterWorkspace}
-                <HowItWorksSection />
-                <PrivacyGuaranteeSection />
-                <FaqSection />
-              </>
-            } />
+          <Routes>
+            {/* Automatically generates Home ("/") + all 8 High-Volume Keyword Landing Pages */}
+            {Object.keys(SEO_LANDING_PAGES).map((routePath) => (
+              <Route
+                key={routePath}
+                path={routePath}
+                element={renderConverterPage(routePath)}
+              />
+            ))}
 
             {/* Dedicated Multi-Page SEO Route: /how-it-works */}
             <Route path="/how-it-works" element={
@@ -323,10 +338,11 @@ function App() {
                   </Link>
                 </div>
                 <HowItWorksSection isStandalonePage={true} />
+                <PopularConvertersSection />
               </div>
             } />
 
-            {/* Dedicated Multi-Page SEO Route: /privacy */}
+            {/* Dedicated Multi-Page SEO Route: /privacy (Includes AdSense Cookie Disclosure) */}
             <Route path="/privacy" element={
               <div className="pt-8">
                 <div className="max-w-5xl mx-auto px-6">
@@ -335,6 +351,7 @@ function App() {
                   </Link>
                 </div>
                 <PrivacyGuaranteeSection isStandalonePage={true} />
+                <AdSensePrivacyDisclosure />
               </div>
             } />
 
@@ -347,6 +364,43 @@ function App() {
                   </Link>
                 </div>
                 <FaqSection isStandalonePage={true} />
+                <PopularConvertersSection />
+              </div>
+            } />
+
+            {/* Mandatory AdSense Authenticity Route: /about */}
+            <Route path="/about" element={
+              <div className="pt-8">
+                <div className="max-w-4xl mx-auto px-6">
+                  <Link to="/" className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 font-medium">
+                    <ArrowLeft size={16} /> Back to File Converter
+                  </Link>
+                </div>
+                <AboutPage />
+              </div>
+            } />
+
+            {/* Mandatory AdSense Authenticity Route: /contact */}
+            <Route path="/contact" element={
+              <div className="pt-8">
+                <div className="max-w-4xl mx-auto px-6">
+                  <Link to="/" className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 font-medium">
+                    <ArrowLeft size={16} /> Back to File Converter
+                  </Link>
+                </div>
+                <ContactPage />
+              </div>
+            } />
+
+            {/* Mandatory Legal Route: /terms */}
+            <Route path="/terms" element={
+              <div className="pt-8">
+                <div className="max-w-4xl mx-auto px-6">
+                  <Link to="/" className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 font-medium">
+                    <ArrowLeft size={16} /> Back to File Converter
+                  </Link>
+                </div>
+                <TermsPage />
               </div>
             } />
           </Routes>
@@ -362,15 +416,20 @@ function App() {
               <p>No files ever leave this device.</p>
             </Link>
             
+            {/* Google AdSense Policy-Compliant Ad Slot (No "Support this tool" click-incentive text) */}
             <div className="flex justify-center">
-              <div className="px-4 py-2 bg-zinc-900/80 border border-zinc-800 rounded-lg text-xs text-zinc-500 tracking-wide text-center w-full max-w-xs">
-                Ad Space • <a href="#" className="text-indigo-400 hover:underline transition-colors">Support this free tool</a>
+              <div className="px-4 py-2 bg-zinc-900/60 border border-zinc-800/80 rounded-lg text-[11px] text-zinc-500 tracking-wider uppercase text-center w-full max-w-xs">
+                Advertisement
               </div>
             </div>
 
-            <div className="flex justify-center md:justify-end gap-6 text-sm text-zinc-500">
+            <div className="flex flex-wrap justify-center md:justify-end gap-x-5 gap-y-2 text-sm text-zinc-500">
               <Link to="/how-it-works" className="hover:text-zinc-300 transition-colors">How it Works</Link>
+              <Link to="/faq" className="hover:text-zinc-300 transition-colors">FAQ</Link>
+              <Link to="/about" className="hover:text-zinc-300 transition-colors">About Us</Link>
+              <Link to="/contact" className="hover:text-zinc-300 transition-colors">Contact</Link>
               <Link to="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
             </div>
           </div>
         </footer>
@@ -379,4 +438,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

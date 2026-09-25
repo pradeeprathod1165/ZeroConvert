@@ -1,9 +1,58 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, UploadCloud, Sliders, Download, WifiOff, Lock, 
   Sparkles, CheckCircle2, XCircle, ArrowRight, Image, 
   Film, FileText, Table, EyeOff, HelpCircle, ChevronDown 
 } from 'lucide-react';
+
+export const SEO_LANDING_PAGES = {
+  '/': {
+    title: 'Free Online File Converter — PDF File Converter, Image to JPG, MP4 & MP3 | ZeroConvert',
+    h1: 'Free Online File Converter',
+    subtitle: 'The 100% private PDF file converter, image file converter to JPG/PNG/SVG, and video to audio file converter (MP4 & MP3). Convert files free in your browser with zero uploads.'
+  },
+  '/pdf-file-converter': {
+    title: 'PDF File Converter & File Converter to PDF (100% Free & Private) | ZeroConvert',
+    h1: 'Free PDF File Converter',
+    subtitle: 'Use our fast file converter to PDF to merge JPG, PNG, and HEIC images into one Adobe-compatible PDF—or convert PDF pages into crisp PNG images locally.'
+  },
+  '/file-converter-to-jpg': {
+    title: 'File Converter to JPG — Convert HEIC, PNG, WEBP & SVG to JPG Free | ZeroConvert',
+    h1: 'File Converter to JPG',
+    subtitle: 'Batch convert iPhone HEIC, PNG, WebP, AVIF, and SVG graphics to standard JPG format in seconds. 100% client-side image file converter with zero server uploads.'
+  },
+  '/file-converter-to-mp4': {
+    title: 'File Converter to MP4 — Free Online Video File Converter | ZeroConvert',
+    h1: 'Video File Converter to MP4',
+    subtitle: 'Convert MOV, WebM, AVI, and MKV videos to MP4 or compress large MP4 files directly in your browser using hardware-accelerated WebAssembly.'
+  },
+  '/file-converter-to-mp3': {
+    title: 'File Converter to MP3 — Audio File Converter & Video to Audio | ZeroConvert',
+    h1: 'Audio File Converter to MP3',
+    subtitle: 'Extract high-bitrate MP3 audio from MP4 videos or convert WAV, AAC, and OGG tracks with our free video to audio file converter.'
+  },
+  '/video-to-audio-file-converter': {
+    title: 'Video to Audio File Converter — Extract MP3 from MP4 Free | ZeroConvert',
+    h1: 'Video to Audio File Converter',
+    subtitle: 'Turn any MP4, MOV, or WebM video into a clean MP3 audio file locally on your device. No upload queues and no file size restrictions.'
+  },
+  '/png-file-converter': {
+    title: 'PNG File Converter — Convert JPG, HEIC, SVG & PDF to PNG Free | ZeroConvert',
+    h1: 'Free PNG File Converter',
+    subtitle: 'Convert images, vector SVGs, and multi-page PDF documents into lossless, transparent-ready PNG files directly inside your browser.'
+  },
+  '/svg-file-converter': {
+    title: 'SVG File Converter & Vector File Converter to PNG, JPG & PDF | ZeroConvert',
+    h1: 'SVG & Vector File Converter',
+    subtitle: 'Rasterize SVG vector graphics into high-resolution PNG, JPG, WebP, or PDF documents instantly without installing heavy design software.'
+  },
+  '/zip-file-converter': {
+    title: 'Batch ZIP File Converter — Convert & Bundle Files into ZIP Free | ZeroConvert',
+    h1: 'Batch ZIP File Converter',
+    subtitle: 'Convert dozens of images, PDFs, audio tracks, or spreadsheets at once and package your entire batch into a single one-click ZIP download.'
+  }
+};
 
 export function HowItWorksSection({ isStandalonePage = false }) {
   useEffect(() => {
@@ -30,7 +79,6 @@ export function HowItWorksSection({ isStandalonePage = false }) {
 
       {/* 3-Step User Guide */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {/* Step 1 */}
         <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-2xl p-6 flex flex-col justify-between hover:border-indigo-500/40 transition-colors">
           <div>
             <div className="flex items-center justify-between mb-5">
@@ -54,7 +102,6 @@ export function HowItWorksSection({ isStandalonePage = false }) {
           </div>
         </div>
 
-        {/* Step 2 */}
         <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-2xl p-6 flex flex-col justify-between hover:border-indigo-500/40 transition-colors">
           <div>
             <div className="flex items-center justify-between mb-5">
@@ -69,7 +116,7 @@ export function HowItWorksSection({ isStandalonePage = false }) {
               Choose Target Format
             </h3>
             <p className="text-sm text-zinc-400 leading-relaxed">
-              Pick the output format you want from the dropdown next to each file. Our smart menu automatically shows only compatible formats—or select <strong>PDF</strong> on multiple images to merge them into one document.
+              Pick the output format you want from the dropdown next to each file—or use <strong>Convert all to</strong> to set the entire batch at once. Select <strong>PDF</strong> on multiple images to merge them into one document.
             </p>
           </div>
           <div className="mt-6 pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs font-medium text-zinc-500">
@@ -78,7 +125,6 @@ export function HowItWorksSection({ isStandalonePage = false }) {
           </div>
         </div>
 
-        {/* Step 3 */}
         <div className="bg-zinc-900/50 border border-zinc-800/90 rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/40 transition-colors">
           <div>
             <div className="flex items-center justify-between mb-5">
@@ -103,20 +149,40 @@ export function HowItWorksSection({ isStandalonePage = false }) {
         </div>
       </div>
 
-      {/* Supported File Types Cheat Sheet */}
+      {/* SEO-Targeted Supported File Converters Matrix */}
       <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl p-6 md:p-8">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-6">
-          What Can You Convert With ZeroConvert?
-        </h4>
+        <h2 className="text-lg md:text-xl font-bold text-zinc-100 mb-2">
+          All-in-One Free File Converter Tools
+        </h2>
+        <p className="text-xs md:text-sm text-zinc-400 mb-6">
+          Every converter below runs 100% locally in your browser with unlimited batch processing and instant ZIP exports.
+        </p>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-start gap-3.5">
+            <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 shrink-0">
+              <FileText size={20} />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-zinc-100">
+                PDF File Converter & File Converter to PDF
+              </h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Use our fast <strong>file converter to PDF</strong> to merge JPG, PNG, and HEIC images into a single Adobe-compatible PDF document, or convert PDF pages into high-res PNGs.
+              </p>
+            </div>
+          </div>
+
           <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-start gap-3.5">
             <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 shrink-0">
               <Image size={20} />
             </div>
             <div>
-              <div className="text-sm font-semibold text-zinc-100">Photos & Graphics</div>
+              <h3 className="text-sm font-semibold text-zinc-100">
+                Image & Vector File Converter to JPG, PNG & SVG
+              </h3>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Convert iPhone <strong>HEIC</strong> photos, <strong>SVG</strong> vectors, <strong>PNG</strong>, <strong>JPG</strong>, <strong>WebP</strong>, and next-gen <strong>AVIF</strong> images effortlessly.
+                A complete <strong>image file converter</strong> and <strong>vector file converter</strong>. Use our <strong>file converter to JPG</strong>, <strong>PNG file converter</strong>, or <strong>SVG file converter</strong> for HEIC, WebP, and AVIF graphics.
               </p>
             </div>
           </div>
@@ -126,21 +192,11 @@ export function HowItWorksSection({ isStandalonePage = false }) {
               <Film size={20} />
             </div>
             <div>
-              <div className="text-sm font-semibold text-zinc-100">Video, Audio & GIFs</div>
+              <h3 className="text-sm font-semibold text-zinc-100">
+                Video to Audio File Converter (MP4, MP3 & WAV)
+              </h3>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Extract <strong>MP3</strong> audio from <strong>MP4</strong> videos, turn video clips into looping <strong>GIFs</strong>, or compress large video files for Discord & email.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-start gap-3.5">
-            <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 shrink-0">
-              <FileText size={20} />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-zinc-100">PDF Documents</div>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Combine multiple images into a single <strong>PDF document</strong>, or extract every page of a PDF into high-resolution <strong>PNG</strong> images.
+                High-speed <strong>video file converter</strong> and <strong>audio file converter</strong>. Use it as a <strong>file converter to MP4</strong>, <strong>file converter to MP3</strong>, or <strong>WAV file converter</strong> to extract audio or create GIFs.
               </p>
             </div>
           </div>
@@ -150,9 +206,11 @@ export function HowItWorksSection({ isStandalonePage = false }) {
               <Table size={20} />
             </div>
             <div>
-              <div className="text-sm font-semibold text-zinc-100">Spreadsheets & Data</div>
+              <h3 className="text-sm font-semibold text-zinc-100">
+                Batch ZIP File Converter & Spreadsheet Tools
+              </h3>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Transform Excel spreadsheets (<strong>XLSX</strong>), <strong>CSV</strong> tables, and <strong>JSON</strong> data files back and forth in a single click.
+                Convert Excel (<strong>XLSX</strong>), <strong>CSV</strong>, and <strong>JSON</strong> tables instantly, and use our built-in <strong>ZIP file converter</strong> to bundle dozens of converted files into a single one-click download.
               </p>
             </div>
           </div>
@@ -212,8 +270,7 @@ export function PrivacyGuaranteeSection({ isStandalonePage = false }) {
         </div>
       </div>
 
-      {/* Comparison Table: Cloud vs ZeroConvert */}
-     {/* Comparison Table: Cloud vs ZeroConvert (Responsive Horizontal Scroll on Small Phones) */}
+      {/* Comparison Table: Cloud vs ZeroConvert (Responsive Horizontal Scroll on Small Phones) */}
       <div className="border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-900/30 mb-10">
         <div className="overflow-x-auto">
           <div className="min-w-[540px]">
@@ -310,7 +367,6 @@ export function FaqSection({ isStandalonePage = false }) {
     }
   }, [isStandalonePage]);
 
-  // Generate Google SEO JSON-LD Schema for Rich Results
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -326,7 +382,6 @@ export function FaqSection({ isStandalonePage = false }) {
 
   return (
     <section id="faq" className="w-full max-w-4xl mx-auto py-16 md:py-24 px-6 border-t border-zinc-900 scroll-mt-16">
-      {/* Structured Data for Google Search Rich Snippets */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -382,6 +437,39 @@ export function FaqSection({ isStandalonePage = false }) {
             </div>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+export function PopularConvertersSection() {
+  const links = [
+    { path: '/pdf-file-converter', label: 'PDF File Converter' },
+    { path: '/file-converter-to-jpg', label: 'File Converter to JPG' },
+    { path: '/file-converter-to-mp4', label: 'File Converter to MP4' },
+    { path: '/file-converter-to-mp3', label: 'File Converter to MP3' },
+    { path: '/video-to-audio-file-converter', label: 'Video to Audio Converter' },
+    { path: '/png-file-converter', label: 'PNG File Converter' },
+    { path: '/svg-file-converter', label: 'SVG Vector File Converter' },
+    { path: '/zip-file-converter', label: 'Batch ZIP File Converter' },
+  ];
+
+  return (
+    <section className="w-full max-w-5xl mx-auto py-12 px-6 border-t border-zinc-900">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 text-center mb-6">
+        Popular Free File Converter Tools
+      </h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {links.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="px-4 py-3 rounded-xl bg-zinc-900/40 hover:bg-zinc-900 border border-zinc-800/80 hover:border-indigo-500/40 text-xs sm:text-sm font-medium text-zinc-300 hover:text-indigo-300 text-center transition-all"
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
     </section>
   );
