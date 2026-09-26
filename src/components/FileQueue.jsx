@@ -92,10 +92,10 @@ export const getAvailableFormats = (fileType, fileName) => {
     return ['JPG', 'PNG', 'WEBP', 'AVIF', 'PDF'];
   }
   if (type.startsWith('video/') || ['mp4', 'mov', 'webm', 'mkv', 'avi'].includes(ext)) {
-    return ['MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'MP3', 'GIF'];
+  return ['MP4', 'MP4 (Compress)', 'MP3', 'WAV', 'GIF', 'WEBM', 'AVI']; 
   }
-  if (type.startsWith('audio/') || ['mp3', 'wav', 'aac', 'ogg'].includes(ext)) {
-    return ['MP3'];
+  if (type.startsWith('audio/') || ['mp3', 'wav', 'aac', 'ogg', 'm4a'].includes(ext)) {
+  return ['MP3', 'WAV'];
   }
   if (type === 'application/pdf' || ext === 'pdf') {
     return ['PNG']; 

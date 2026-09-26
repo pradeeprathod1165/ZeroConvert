@@ -144,7 +144,7 @@ function App() {
 
         if (fileObj.file.type === 'application/pdf') {
           result = await pdfToImages(fileObj.file, progressCallback);
-        } else if (['MP3', 'MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(fileObj.targetFormat)) {
+        } else if (['MP3', 'WAV','MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(fileObj.targetFormat)) {
           result = await processAudioVideo(fileObj.file, fileObj.targetFormat, progressCallback);
         } else if (['JPG', 'PNG', 'WEBP', 'AVIF'].includes(fileObj.targetFormat)) {
           result = await processImage(fileObj.file, fileObj.targetFormat, progressCallback);
