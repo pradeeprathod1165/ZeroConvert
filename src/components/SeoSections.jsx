@@ -8,50 +8,60 @@ import {
 
 export const SEO_LANDING_PAGES = {
   '/': {
-    title: 'Free Online File Converter — PDF File Converter, Image to JPG, MP4 & MP3 | ZeroConvert',
+    title: 'Free Online File Converter - PDF, JPG, MP4 | ZeroConvert',
     h1: 'Free Online File Converter',
-    subtitle: 'The 100% private PDF file converter, image file converter to JPG/PNG/SVG, and video to audio file converter (MP4 & MP3). Convert files free in your browser with zero uploads.'
+    subtitle: 'Convert PDF, DOCX, Images, Audio, Video & Data 100% locally in your browser.',
   },
   '/pdf-file-converter': {
-    title: 'PDF File Converter & File Converter to PDF (100% Free & Private) | ZeroConvert',
-    h1: 'Free PDF File Converter',
-    subtitle: 'Use our fast file converter to PDF to merge JPG, PNG, and HEIC images into one Adobe-compatible PDF—or convert PDF pages into crisp PNG images locally.'
+    title: 'PDF File Converter - PDF to DOCX, JPG & PNG | ZeroConvert',
+    h1: 'Free Online PDF File Converter',
+    subtitle: 'Convert PDF to editable Word DOCX, JPG, PNG, WebP, or TXT 100% locally.',
+  },
+  '/file-converter-to-pdf': {
+    title: 'File Converter to PDF - JPG, PNG & Word | ZeroConvert',
+    h1: 'Free File Converter to PDF',
+    subtitle: 'Convert and merge JPG, PNG, HEIC, WebP, SVG, and DOCX files into PDF.',
   },
   '/file-converter-to-jpg': {
-    title: 'File Converter to JPG — Convert HEIC, PNG, WEBP & SVG to JPG Free | ZeroConvert',
-    h1: 'File Converter to JPG',
-    subtitle: 'Batch convert iPhone HEIC, PNG, WebP, AVIF, and SVG graphics to standard JPG format in seconds. 100% client-side image file converter with zero server uploads.'
-  },
-  '/file-converter-to-mp4': {
-    title: 'File Converter to MP4 — Free Online Video File Converter | ZeroConvert',
-    h1: 'Video File Converter to MP4',
-    subtitle: 'Convert MOV, WebM, AVI, and MKV videos to MP4 or compress large MP4 files directly in your browser using hardware-accelerated WebAssembly.'
-  },
-  '/file-converter-to-mp3': {
-    title: 'File Converter to MP3 — Audio File Converter & Video to Audio | ZeroConvert',
-    h1: 'Audio File Converter to MP3',
-    subtitle: 'Extract high-bitrate MP3 audio from MP4 videos or convert WAV, AAC, and OGG tracks with our free video to audio file converter.'
-  },
-  '/video-to-audio-file-converter': {
-    title: 'Video to Audio File Converter — Extract MP3 from MP4 Free | ZeroConvert',
-    h1: 'Video to Audio File Converter',
-    subtitle: 'Turn any MP4, MOV, or WebM video into a clean MP3 audio file locally on your device. No upload queues and no file size restrictions.'
+    title: 'File Converter to JPG - HEIC, PNG, WebP & PDF | ZeroConvert',
+    h1: 'Free File Converter to JPG',
+    subtitle: 'Batch convert HEIC, PNG, WebP, AVIF, SVG, and PDF pages to high-res JPG.',
   },
   '/png-file-converter': {
-    title: 'PNG File Converter — Convert JPG, HEIC, SVG & PDF to PNG Free | ZeroConvert',
-    h1: 'Free PNG File Converter',
-    subtitle: 'Convert images, vector SVGs, and multi-page PDF documents into lossless, transparent-ready PNG files directly inside your browser.'
+    title: 'PNG File Converter - Convert Images to PNG | ZeroConvert',
+    h1: 'Free Online PNG File Converter',
+    subtitle: 'Convert HEIC, JPG, WebP, SVG, and PDF files to lossless PNG in your browser.',
   },
   '/svg-file-converter': {
-    title: 'SVG File Converter & Vector File Converter to PNG, JPG & PDF | ZeroConvert',
+    title: 'SVG & Vector File Converter to PNG, JPG & PDF | ZeroConvert',
     h1: 'SVG & Vector File Converter',
-    subtitle: 'Rasterize SVG vector graphics into high-resolution PNG, JPG, WebP, or PDF documents instantly without installing heavy design software.'
+    subtitle: 'Rasterize SVG vector graphics into crisp PNG, JPG, WebP, or PDF documents.',
+  },
+  '/video-to-audio-file-converter': {
+    title: 'Video to Audio Converter - MP4 to MP3 & WAV | ZeroConvert',
+    h1: 'Video to Audio File Converter',
+    subtitle: 'Extract high-bitrate MP3 or lossless WAV audio from MP4, MOV, and MKV videos.',
+  },
+  '/file-converter-to-mp4': {
+    title: 'Video File Converter to MP4 - MOV, MKV & AVI | ZeroConvert',
+    h1: 'Free Video File Converter to MP4',
+    subtitle: 'Convert MOV, MKV, WebM, and AVI videos to H.264 MP4 locally in your browser.',
+  },
+  '/file-converter-to-mp3': {
+    title: 'Audio File Converter to MP3 - WAV, M4A & MP4 | ZeroConvert',
+    h1: 'Free Audio File Converter to MP3',
+    subtitle: 'Convert WAV, M4A, OGG, AAC, and video files to MP3 locally with zero uploads.',
+  },
+  '/wav-file-converter': {
+    title: 'WAV File Converter - Convert Audio to WAV/MP3 | ZeroConvert',
+    h1: 'Free Online WAV File Converter',
+    subtitle: 'Convert audio and video files to uncompressed PCM WAV or high-speed MP3.',
   },
   '/zip-file-converter': {
-    title: 'Batch ZIP File Converter — Convert & Bundle Files into ZIP Free | ZeroConvert',
+    title: 'Batch ZIP File Converter - Bulk Convert Files | ZeroConvert',
     h1: 'Batch ZIP File Converter',
-    subtitle: 'Convert dozens of images, PDFs, audio tracks, or spreadsheets at once and package your entire batch into a single one-click ZIP download.'
-  }
+    subtitle: 'Convert dozens of files at once and download everything as a single ZIP archive.',
+  },
 };
 
 export function HowItWorksSection({ isStandalonePage = false }) {
