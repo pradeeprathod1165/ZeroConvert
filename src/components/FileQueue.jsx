@@ -87,23 +87,28 @@ export const FormatDropdown = ({ value, options, disabled, onChange, placeholder
 export const getAvailableFormats = (fileType, fileName) => {
   const type = (fileType || '').toLowerCase();
   const ext = fileName.split('.').pop().toLowerCase();
-  
+
   if (type.startsWith('image/') || ['heic', 'svg'].includes(ext)) {
     return ['JPG', 'PNG', 'WEBP', 'AVIF', 'PDF'];
   }
   if (type.startsWith('video/') || ['mp4', 'mov', 'webm', 'mkv', 'avi'].includes(ext)) {
-  return ['MP4', 'MP4 (Compress)', 'MP3', 'WAV', 'GIF', 'WEBM', 'AVI']; 
+    return ['MP4', 'MP4 (Compress)', 'MP3', 'WAV', 'GIF', 'WEBM', 'AVI'];
   }
   if (type.startsWith('audio/') || ['mp3', 'wav', 'aac', 'ogg', 'm4a'].includes(ext)) {
-  return ['MP3', 'WAV'];
+    return ['MP3', 'WAV'];
   }
   if (type === 'application/pdf' || ext === 'pdf') {
-    return ['PNG']; 
+    return ['DOCX', 'TXT', 'PNG', 'JPG', 'WEBP'];
+  }
+  if (ext === 'docx' || type.includes('wordprocessingml')) {
+    return ['PDF', 'TXT'];
+  }
+  if (ext === 'txt' || type === 'text/plain') {
+    return ['PDF', 'DOCX'];
   }
   if (ext === 'csv' || ext === 'json' || ext === 'xlsx' || type.includes('spreadsheet') || type.includes('excel')) {
-    return ['CSV', 'JSON', 'XLSX'].filter(f => f.toLowerCase() !== ext);
+    return ['CSV', 'JSON', 'XLSX'].filter((f) => f.toLowerCase() !== ext);
   }
-  
   return [];
 };
 

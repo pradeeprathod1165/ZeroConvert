@@ -13,7 +13,7 @@ import {
 import { AboutPage, ContactPage, TermsPage, AdSensePrivacyDisclosure } from './components/LegalPages';
 import { Loader2, Download, Zap, Lock, ArrowLeft, Trash2 } from 'lucide-react';
 import { processImage } from './utils/imageEngine';
-import { imagesToPdf, pdfToImages } from './utils/pdfEngine';
+import { imagesToPdf, processPdfFile, processDocumentFile } from './utils/pdfEngine';
 import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
 import { processDataFile } from './utils/dataEngine';
 import { generateZip } from './utils/zipExport';
@@ -142,17 +142,21 @@ function App() {
         let result;
         const progressCallback = (progressValue) => updateFileState(fileObj.id, { progress: progressValue });
 
-        if (fileObj.file.type === 'application/pdf') {
-          result = await pdfToImages(fileObj.file, progressCallback);
-        } else if (['MP3', 'WAV','MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(fileObj.targetFormat)) {
-          result = await processAudioVideo(fileObj.file, fileObj.targetFormat, progressCallback);
-        } else if (['JPG', 'PNG', 'WEBP', 'AVIF'].includes(fileObj.targetFormat)) {
-          result = await processImage(fileObj.file, fileObj.targetFormat, progressCallback);
-        } else if (['CSV', 'JSON', 'XLSX'].includes(fileObj.targetFormat)) {
-          result = await processDataFile(fileObj.file, fileObj.targetFormat, progressCallback);
-        } else {
-          throw new Error(`Format combination not supported.`);
-        }
+       const fileExt = fileObj.name.split('.').pop().toLowerCase();
+
+     if (fileObj.file.type === 'application/pdf' || fileExt === 'pdf') {
+       result = await processPdfFile(fileObj.file, fileObj.targetFormat, progressCallback);
+     } else if (['docx', 'txt'].includes(fileExt)) {
+       result = await processDocumentFile(fileObj.file, fileObj.targetFormat, progressCallback);
+     } else if (['MP3', 'WAV', 'MP4', 'MP4 (Compress)', 'WEBM', 'AVI', 'GIF'].includes(fileObj.targetFormat)) {
+       result = await processAudioVideo(fileObj.file, fileObj.targetFormat, progressCallback);
+     } else if (['JPG', 'PNG', 'WEBP', 'AVIF'].includes(fileObj.targetFormat)) {
+       result = await processImage(fileObj.file, fileObj.targetFormat, progressCallback);
+     } else if (['CSV', 'JSON', 'XLSX'].includes(fileObj.targetFormat)) {
+       result = await processDataFile(fileObj.file, fileObj.targetFormat, progressCallback);
+     } else {
+       throw new Error(`Format combination not supported.`);
+     }
         updateFileState(fileObj.id, { 
           status: 'Completed', 
           progress: 100, 
