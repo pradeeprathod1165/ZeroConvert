@@ -18,20 +18,39 @@ import { initFFmpeg, processAudioVideo } from './utils/ffmpegEngine';
 import { processDataFile } from './utils/dataEngine';
 import { generateZip } from './utils/zipExport';
 
-// Updates the browser tab title ONLY for the currently active URL route
 function SeoTitleUpdater() {
   const { pathname } = useLocation();
+
   useEffect(() => {
+    // 1. Force redirect if accessed via any .pages.dev subdomain
+    if (window.location.hostname.endsWith('.pages.dev')) {
+      window.location.replace(`https://getzeroconvert.com${pathname}${window.location.search}`);
+      return;
+    }
+
+    // 2. Update browser tab title
     if (SEO_LANDING_PAGES[pathname]) {
       document.title = SEO_LANDING_PAGES[pathname].title;
     }
-    // Send pageview to Google Analytics on route navigation
+
+    // 3. Dynamically update canonical URL per route so Google indexes all sub-pages
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    const cleanPath = pathname === '/' ? '' : pathname;
+    canonicalLink.setAttribute('href', `https://getzeroconvert.com${cleanPath}`);
+
+    // 4. Send pageview to Google Analytics on route navigation
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'page_view', {
         page_path: pathname,
       });
     }
   }, [pathname]);
+
   return null;
 }
 
