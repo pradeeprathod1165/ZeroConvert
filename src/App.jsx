@@ -25,6 +25,12 @@ function SeoTitleUpdater() {
     if (SEO_LANDING_PAGES[pathname]) {
       document.title = SEO_LANDING_PAGES[pathname].title;
     }
+    // Send pageview to Google Analytics on route navigation
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'page_view', {
+        page_path: pathname,
+      });
+    }
   }, [pathname]);
   return null;
 }
